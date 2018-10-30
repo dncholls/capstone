@@ -62,6 +62,13 @@ datetime_converter <- function(date_time, file)
   if(file == 1)
   {
     date_time$Date.of.Birth = as.POSIXct(date_time$Date.of.Birth, format = "%m/%d/%Y")
+    date_time$Month = format(as.Date(date_time$DateTime), "%m")
+    num_months <- read.delim("/Users/Diana/Documents/Capstone Project/months.txt", header = FALSE)
+    names(num_months)[1] <- "Month"
+    names(num_months)[2] <- "Outcome.Month"
+    date_time$Month <- as.numeric(date_time$Month)
+    date_time <- merge(date_time, num_months, by = "Month", all.x = TRUE)
+    date_time$Month <- NULL
   }
   
   return(date_time)
@@ -250,6 +257,51 @@ dog_breed_cleaning <- function(input)
   return(input)
 }
 
+# Creating New Breed Attributes for Cats -- Purebred.or.Mixed
+cat_breed_cleaning <- function(input)
+{
+  # Adding the Attributes
+  ## Purebred.or.Mixed
+  input$Purebred.or.Mixed <- NA
+  input$Purebred.or.Mixed[grepl("(Mix)+", input$Breed) | grepl("/", input$Breed)] = "Mixed"
+  input$Purebred.or.Mixed[!grepl("(Mix)+", input$Breed) & !grepl("/", input$Breed)] = "Purebred"
+  
+  return(input)
+}
+
+# Creating a General Color Attribute.
+animal_color <- function(input, type)
+{
+  if(type == "Cat")
+  {
+    cat_colors <- read.delim(".../cat_colors.txt", header = FALSE, stringsAsFactors = FALSE)
+    colors <- sapply(cat_colors$V1, function(color) grepl(color, input$Color))
+    
+    input$Color <- gsub("Torbie", "Tortie", input$Color)
+    input$Gen.Color <- apply(colors, 1, function(x) paste0(names(x)[x], collapse = "/"))
+    input$Gen.Color[input$Gen.Color == ""] <- input$Color[input$Gen.Color == ""]
+    input$Gen.Color[grepl("/", input$Gen.Color) | grepl("Tricolor", input$Gen.Color)] = "Multicolored"
+  }
+  
+  else if(type == "Dog")
+  {
+    dog_colors <- read.delim(".../dog_colors.txt", header = FALSE, stringsAsFactors = FALSE)
+    colors <- sapply(dog_colors$V1, function(color) grepl(color, input$Color))
+    
+    input$Gen.Color <- apply(colors, 1, function(x) paste0(names(x)[x], collapse = "/"))
+    input$Gen.Color[input$Gen.Color == ""] <- input$Color[input$Gen.Color == ""]
+    input$Gen.Color[grepl("/", input$Gen.Color) | grepl("Tricolor", input$Gen.Color)] = "Multicolored"
+  }
+  
+  else if(type == "Bird")
+  {
+    input$Gen.Color <- input$Color
+    input$Gen.Color[grepl("/", input$Gen.Color) | grepl("Tricolor", input$Gen.Color)] = "Multicolored"
+  }
+  
+  return(input)
+}
+
 # Creating a Gender Attribute.
 animal_gender <- function(input)
 {
@@ -266,6 +318,32 @@ sex_difference <- function(input)
 {
   input$Sex.Difference[which(input$Sex.upon.Intake != input$Sex.upon.Outcome)] <- gsub("( Female| Male)*", "", input$Sex.upon.Outcome[which(input$Sex.upon.Intake != input$Sex.upon.Outcome)])
   input$Sex.Difference[which(input$Sex.upon.Intake == input$Sex.upon.Outcome)] <- "None"
+  
+  return(input)
+}
+
+# A Function that Calls All Feature Engineering Functions
+feature_engineering <- function(input, type)
+{
+  input = animal_gender(input)
+  input = sex_difference(input)
+  
+  if(type == "Dog")
+  {
+    input = dog_breed_cleaning(input)
+    input = animal_color(input,type)
+  }
+  
+  else if(type == "Cat")
+  {
+    input = cat_breed_cleaning(input)
+    input = animal_color(input, type)
+  }
+  
+  else if(type == "Bird")
+  {
+    input = animal_color(input, type)
+  }
   
   return(input)
 }
@@ -302,9 +380,7 @@ dog_outcomes = total_clean(dog_outcomes, 1)
 dog_total = inner_join_func(dog_intakes, dog_outcomes)
 
 # Applying Feature Engineering Functions.
-dog_total <- dog_breed_cleaning(dog_total)
-dog_total <- animal_gender(dog_total)
-dog_total <- sex_difference(dog_total)
+dog_total <- feature_engineering(dog_total)
 ```
 
 
