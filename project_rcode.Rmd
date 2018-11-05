@@ -1,6 +1,6 @@
 ---
 title: "Capstone Project -- in Progress"
-author: "28/10/2018"
+author: "05/11/2018"
 output: html_document
 ---
 
@@ -208,7 +208,7 @@ inner_join_func <- function(intakes, outcomes)
 ```
 
 
-** Feature Engineering & Other Model Preparation Functions **
+** Functions for Feature Engineering **
 
 ```{r}
 # Creating New Breed Attributes -- Purebred.or.Mixed and AKC.Group
@@ -347,18 +347,99 @@ feature_engineering <- function(input, type)
   
   return(input)
 }
+```
 
+
+** Functions for Modelling **
+
+```{r}
 # Splitting the Data into Training and Test Sets.
-train_test <- function(dataset)
+train_test <- function(dataset, model, crossValid, folds)
 {
-  index <- nrow(dataset)
-  sizes <- round(index*0.7)
-  filtered_index <- sample(1:index, sizes)
   
-  train_set <- dataset[filtered_index,]
-  test_set <- dataset[-filtered_index,]
+  if(crossValid == TRUE)
+  {
+    train_set <- dataset[-folds,]
+    test_set <- dataset[folds,]
+  }
+  
+  else 
+  {
+    index <- nrow(dataset)
+    sizes <- round(index*0.7)
+    filtered_index <- sample(1:index, sizes)
+  
+    train_set <- dataset[filtered_index,]
+    test_set <- dataset[-filtered_index,]
+  }
+  
+  if(model == "Random Forest")
+  {
+    # Converting Non-Numeric Attributes to Factors
+    train_set <- as.data.frame(unclass(train_set))
+    test_set <- as.data.frame(unclass(test_set))
+    
+    test_set$Found.Location <- factor(test_set$Found.Location, levels = levels(train_set$Found.Location))
+    test_set$Gen.Color <- factor(test_set$Gen.Color, levels = levels(train_set$Gen.Color))
+    test_set$Outcome.Subtype <- factor(test_set$Outcome.Subtype, levels = levels(train_set$Outcome.Subtype))
+  }
   
   return(list(train_set, test_set))
+}
+
+# Performs the Random Forest Algorithm.
+random_forest_alg <- function(dataset, cols)
+{
+  old <- Sys.time()
+  k_folds = 1
+  folds <- createFolds(dataset$Outcome.Type, k = k_folds)
+  
+  #for(i in 1:k_folds)
+  #{
+    # Getting the Training and Test Sets.
+    traintest <- train_test(dataset, "Random Forest", FALSE, folds[[1]])
+    train <- traintest[[1]]
+    test <- traintest[[2]]
+    test <- test[,cols]
+    train <- train[,cols]
+    
+    print(unique(train$Outcome.Type))
+    
+    train_smote <- SMOTE(Outcome.Type ~ . , data = train, k=5, perc.over = 92390)
+    print(unique(train_smote$Outcome.Type))
+    
+    # Random Forest Algorithm
+    model <- randomForest(Outcome.Type ~ ., data = train_smote)
+    
+    # Predicting the Results
+    model_pred <- model_performance(model, test) 
+    
+    new <- Sys.time() - old
+    print(new)
+  #}
+    
+  return(list(model, model_pred))
+}
+
+# Describes the Model Performance.
+model_performance <- function(model, test)
+{
+  #results <- data.frame(Precision = double(), Recall = double(), Accuracy = double())
+  
+  model_pred <- predict(model, test)
+  pred_table <- table(model_pred, test$Outcome.Type)
+  results <- sum(diag(pred_table))/sum(pred_table)
+  #results$Recall
+  
+  return(results)
+}
+
+# Calculates the Baseline Function.
+baseline_func <- function(dataset)
+{
+  baseline <- sum(dataset$Outcome.Type == "Adoption")/nrow(dataset)
+  
+  return(baseline)
 }
 
 ```
@@ -381,6 +462,27 @@ dog_total = inner_join_func(dog_intakes, dog_outcomes)
 
 # Applying Feature Engineering Functions.
 dog_total <- feature_engineering(dog_total)
+
+dog_total <- dog_total[-which(dog_total$Outcome.Type == "Died"),]
+
+```
+
+
+** Random Forest Algorithm **
+
+```{r}
+
+# Selecting the Relevant Attributes.
+cols <- c("Outcome.Type", "Outcome.Subtype", "Sex.upon.Outcome", "Age.upon.Outcome",  "Outcome.Month", "Intake.Type", "Intake.Condition", "Found.Location", "Days.to.Outcome", "Purebred.or.Mixed", "AKC.Group", "Gender", "Sex.Difference", "Gen.Color")
+
+# Performing the Random Forest.
+tree_test <- random_forest_alg(dog_total, cols)
+
+# Printing the Results.
+tree_test
+baseline_func(dog_total)
+tree_test[[1]]$importance[order(tree_test[[1]]$importance),]
+
 ```
 
 
