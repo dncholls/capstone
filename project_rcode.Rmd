@@ -13,6 +13,10 @@ library(ggplot2)
 library(tis)
 library(stringr)
 library(randomForest)
+library(data.table)
+library(caret)
+library(DMwR)
+library(ranger)
 
 host="[host name here]"
 port="[port number here]"
@@ -257,6 +261,21 @@ dog_breed_cleaning <- function(input)
   return(input)
 }
 
+# Creating an Even More Generalized Attribute for Dog Breed.
+general_dog_group <- function(input)
+{
+  gen.group <- read.delim("/.../gen_group.txt", header = FALSE)
+  
+  names(gen.group)[1] = "Breed"
+  names(gen.group)[2] = "Gen.Group"
+  
+  input <- merge(input, gen.group, by = "Breed", all.x = TRUE)
+  input$Gen.Group <- as.character(input$Gen.Group)
+  input$Gen.Group[is.na(input$Gen.Group)] <- "Multigroup"
+  
+  return(input)
+}
+
 # Creating New Breed Attributes for Cats -- Purebred.or.Mixed
 cat_breed_cleaning <- function(input)
 {
@@ -308,7 +327,7 @@ animal_gender <- function(input)
   input$Gender <- NA
   input$Gender[grepl("(Male)+", input$Sex.upon.Outcome)] = "Male"
   input$Gender[grepl("(Female)+", input$Sex.upon.Outcome)] = "Female"
-  input$Gender[grepl("(Unknown)+", input$Sex.upon.Outcome)] = "Unknown"
+  input$Gender[grepl("(Unknown)+", input$Sex.upon.Outcome)] = "Unknown Gender"
   
   return(input)
 }
@@ -322,16 +341,27 @@ sex_difference <- function(input)
   return(input)
 }
 
+outcome_type_cleaning <- function(input)
+{
+  input <- input[-which(input$Outcome.Type == "Died"),]
+  input <- input[-which(input$Outcome.Type == "Missing"),]
+  input <- input[-which(input$Outcome.Type == "Disposal"),]
+  
+  return(input)
+}
+
 # A Function that Calls All Feature Engineering Functions
 feature_engineering <- function(input, type)
 {
   input = animal_gender(input)
   input = sex_difference(input)
+  input = outcome_type_cleaning(input)
   
   if(type == "Dog")
   {
     input = dog_breed_cleaning(input)
     input = animal_color(input,type)
+    input = general_dog_group(input)
   }
   
   else if(type == "Cat")
@@ -463,7 +493,10 @@ dog_total = inner_join_func(dog_intakes, dog_outcomes)
 # Applying Feature Engineering Functions.
 dog_total <- feature_engineering(dog_total)
 
-dog_total <- dog_total[-which(dog_total$Outcome.Type == "Died"),]
+cols <- c("Outcome.Type", "Outcome.Subtype", "Sex.upon.Outcome", "Age.upon.Outcome",  "Outcome.Month", "Intake.Type", "Intake.Condition", "Found.Location", "Days.to.Outcome", "Purebred.or.Mixed", "Gender", "Gen.Color", "Gen.Group")
+
+dog_total_2 <- dog_total[,cols]
+write.csv(dog_total_2, file = "dog_total.csv")
 
 ```
 
