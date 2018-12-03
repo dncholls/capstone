@@ -98,8 +98,6 @@ def total_clean(the_input, file):
 dog_outcomes = read_sql('select `Animal.ID`, DateTime, MonthYear, `Date.of.Birth`, `Outcome.Type`, `Outcome.Subtype`, `Sex.upon.Outcome`, `Age.upon.Outcome`, Breed, Color from raw_outcomes where `Animal.Type` = "Dog" and `Age.upon.Outcome` != "NA" and `Outcome.Type` != "NA";', con=mrdata)
 cat_outcomes = read_sql('select `Animal.ID`, DateTime, MonthYear, `Date.of.Birth`, `Outcome.Type`, `Outcome.Subtype`, `Sex.upon.Outcome`, `Age.upon.Outcome`, Breed, Color from raw_outcomes where `Animal.Type` = "Cat" and `Age.upon.Outcome` != "NA" and `Outcome.Type` != "NA";', con=mrdata)
 bird_outcomes = read_sql('select `Animal.ID`, DateTime, MonthYear, `Date.of.Birth`, `Outcome.Type`, `Outcome.Subtype`, `Sex.upon.Outcome`, `Age.upon.Outcome`, Breed, Color from raw_outcomes where `Animal.Type` = "Bird" and `Age.upon.Outcome` != "NA" and `Outcome.Type` != "NA";', con=mrdata)
-livestock_outcomes = read_sql('select `Animal.ID`, DateTime, MonthYear, `Date.of.Birth`, `Outcome.Type`, `Outcome.Subtype`, `Sex.upon.Outcome`, `Age.upon.Outcome`, Breed, Color from raw_outcomes where `Animal.Type` = "Livestock" and `Age.upon.Outcome` != "NA" and `Outcome.Type` != "NA";', con=mrdata)
-other_outcomes = read_sql('select `Animal.ID`, DateTime, MonthYear, `Date.of.Birth`, `Outcome.Type`, `Outcome.Subtype`, `Sex.upon.Outcome`, `Age.upon.Outcome`, Breed, Color from raw_outcomes where `Animal.Type` = "Other" and `Age.upon.Outcome` != "NA" and `Outcome.Type` != "NA";', con=mrdata)
 
 # Cleaning the Data.
 dog_outcomes = total_clean(dog_outcomes, 1)
@@ -124,16 +122,6 @@ outcome_types = outcome_types.append(temp)
 
 temp['Outcome'] = bird_outcomes.loc[:,"Outcome_Type"]
 temp['Animal'] = "Bird"
-
-outcome_types = outcome_types.append(temp)
-
-temp['Outcome'] = livestock_outcomes.loc[:,"Outcome_Type"]
-temp['Animal'] = "Livestock"
-
-outcome_types = outcome_types.append(temp)
-
-temp['Outcome'] = other_outcomes.loc[:,"Outcome_Type"]
-temp['Animal'] = "Other"
 
 outcome_types = outcome_types.append(temp)
 

@@ -17,6 +17,7 @@ library(data.table)
 library(caret)
 library(DMwR)
 library(ranger)
+library(Boruta)
 
 host="[host name here]"
 port="[port number here]"
@@ -493,9 +494,11 @@ dog_total = inner_join_func(dog_intakes, dog_outcomes)
 # Applying Feature Engineering Functions.
 dog_total <- feature_engineering(dog_total)
 
-cols <- c("Outcome.Type", "Outcome.Subtype", "Sex.upon.Outcome", "Age.upon.Outcome",  "Outcome.Month", "Intake.Type", "Intake.Condition", "Found.Location", "Days.to.Outcome", "Purebred.or.Mixed", "Gender", "Gen.Color", "Gen.Group")
+cols <- c("Outcome.Type", "Sex.upon.Outcome", "Age.upon.Intake", "Age.upon.Outcome",  "Outcome.Month", "Intake.Type", "Intake.Condition", "Found.Location", "Days.to.Outcome", "Purebred.or.Mixed", "Gender", "Gen.Color", "Gen.Group")
 
 dog_total_2 <- dog_total[,cols]
+unique(dog_total_2$Outcome.Type)
+
 write.csv(dog_total_2, file = "dog_total.csv")
 
 ```
