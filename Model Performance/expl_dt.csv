@@ -1,0 +1,21 @@
+,target,feature,weight,value
+0,Adoption,Age_upon_Intake,0.29889270264749657,-0.6988071980700409
+1,Adoption,<BIAS>,0.25,1.0
+2,Adoption,Days_to_Outcome,0.15476941947736467,0.5892739563169921
+3,Adoption, Neutered,0.1445661172574697,1.0
+4,Adoption, Public Assist,0.05696591089502656,0.0
+5,Euthanasia,<BIAS>,0.25,1.0
+6,Euthanasia, Public Assist,-0.0005941284640830491,0.0
+7,Euthanasia,Days_to_Outcome,-0.037215280546708335,0.5892739563169921
+8,Euthanasia,Age_upon_Intake,-0.09629492806888122,-0.6988071980700409
+9,Euthanasia, Neutered,-0.10959208248664107,1.0
+10,Return to Owner,<BIAS>,0.25,1.0
+11,Return to Owner, Neutered,0.057383156468728824,1.0
+12,Return to Owner, Public Assist,-0.07080036332249325,0.0
+13,Return to Owner,Age_upon_Intake,-0.0718611162392529,-0.6988071980700409
+14,Return to Owner,Days_to_Outcome,-0.15387951856104218,0.5892739563169921
+15,Transfer,<BIAS>,0.25,1.0
+16,Transfer,Days_to_Outcome,0.03632537963038579,0.5892739563169921
+17,Transfer, Public Assist,0.014428580891549803,0.0
+18,Transfer, Neutered,-0.09235719123955746,1.0
+19,Transfer,Age_upon_Intake,-0.1307366583393625,-0.6988071980700409
