@@ -1,0 +1,63 @@
+Pheasant Mix	Gamebird
+Guinea	Gamebird
+Guinea Mix	Gamebird
+Dove	Pigeons and Doves
+Dove Mix	Pigeons and Doves
+Hawk	Bird of Prey
+Hawk Mix	Bird of Prey
+Song Bird Mix	Perching Birds
+Leghorn Mix	Gamebird
+Pigeon Mix	Pigeons and Doves
+Chicken	Gamebird
+Chicken Mix	Gamebird
+Turkey Mix	Gamebird
+Budgerigar	Parrots and Cockatoos
+Duck	Waterfowl
+Muscovy Mix	Waterfowl
+Parrot Mix	Parrots and Cockatoos
+Conure	Parrots and Cockatoos
+Duck Mix	Waterfowl
+Grackle Mix	Perching Birds
+Heron Mix	Herons and Storks
+Parakeet Mix	Parrots and Cockatoos
+Cockatiel Mix	Parrots and Cockatoos
+Barred Rock Mix	Gamebird
+Grackle	Perching Birds
+Quaker Mix	Parrots and Cockatoos
+Lark Mix	Perching Birds
+Rhode Island Mix	Gamebird
+Wren Mix	Perching Birds
+Owl Mix	Owls
+Parrot	Parrots and Cockatoos
+Silkie Mix	Gamebird
+Peafowl Mix	Gamebird
+Bantam Mix	Gamebird
+Chickadee Mix	Perching Birds
+Vulture Mix	Bird of Prey
+Bluebird Mix	Perching Birds
+Parakeet	Parrots and Cockatoos
+Peafowl	Gamebird
+Sparrow	Perching Birds
+Mockingbird	Perching Birds
+Mockingbird Mix	Perching Birds
+Lovebird Mix	Parrots and Cockatoos
+Whimbrel Mix	Shorebird
+Bunting	Perching Birds
+Sparrow Mix	Perching Birds
+Finch Mix	Perching Birds
+Pigeon	Pigeons and Doves
+Quaker	Parrots and Cockatoos
+Muscovy	Waterfowl
+Other Bird Mix	Other Group
+Nuthatch Mix	Perching Birds
+Cockatiel	Parrots and Cockatoos
+Cockatoo	Parrots and Cockatoos
+Bantam	Gamebird
+Cockatoo Mix	Parrots and Cockatoos
+African Mix	Other Group
+Heron	Herons and Storks
+Vulture	Bird of Prey
+Conure Mix	Parrots and Cockatoos
+Goose Mix	Waterfowl
+Finch	Perching Birds
+Owl	Owls

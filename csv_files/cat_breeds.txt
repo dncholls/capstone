@@ -1,0 +1,52 @@
+Abyssinian Mix	Oriental
+American Curl Shorthair	Other Group
+American Curl Shorthair Mix	Other Group
+American Shorthair Mix	Other Group
+American Wirehair Mix	Other Group
+Angora Mix	Oriental
+Balinese	Other Group
+Balinese Mix	Other Group
+Bengal	Foreign Shorthairs
+Bengal Mix	Foreign Shorthairs
+Birman Mix	Semi-Longhair
+Bombay Mix	Burmese
+British Shorthair	British Shorthair
+British Shorthair Mix	British Shorthair
+Burmese	Burmese
+Chartreux Mix	Other Group
+Colorpoint Mix	Multigroup
+Cornish Rex Mix	Other Group
+Cymric Mix	Other Group
+Devon Rex	Foreign Shorthairs
+Devon Rex Mix	Foreign Shorthairs
+Exotic Shorthair Mix	Persian
+Havana Brown Mix	Multigroup
+Himalayan	Multigroup
+Himalayan Mix	Multigroup
+Japanese Bobtail Mix	Other Group
+Javanese Mix	Multigroup
+Maine Coon	Semi-Longhair
+Maine Coon Mix	Semi-Longhair
+Manx	Other Group
+Manx Mix	Other Group
+Munchkin Longhair Mix	Other Group
+Munchkin Shorthair Mix	Other Group
+Norwegian Forest Cat Mix	Semi-Longhair
+Ocicat Mix	Foreign Shorthairs
+Oriental Sh Mix	Multigroup
+Persian	Persian
+Persian Mix	Persian
+Pixiebob Shorthair Mix	Other Group
+Ragdoll	Semi-Longhair
+Ragdoll Mix	Semi-Longhair
+Russian Blue	Other Group
+Russian Blue Mix	Other Group
+Scottish Fold Mix	Other Group
+Siamese	Siamese
+Siamese Mix	Siamese
+Snowshoe	Siamese
+Snowshoe Mix	Siamese
+Sphynx	Oriental
+Turkish Angora	Oriental
+Turkish Angora Mix	Oriental
+Turkish Van Mix	Semi-Longhair

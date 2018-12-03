@@ -1,0 +1,176 @@
+Afghan Hound	Hound
+Africanis	Hound
+American Foxhound	Hound
+American Leopard Hound	Hound
+Andalusian Hound	Hound
+Artois Hound	Hound
+Austrian Black and Tan Hound	Hound
+Azawakh	Hound
+Basenji	Hound
+Basset Artesien Normand	Hound
+Basset Bleu de Gascogne	Hound
+Basset Fauve de Bretagne	Hound
+Grand Basset Griffon Vendeen	Hound
+Petit Basset Griffon Vendeen	Hound
+Basset Hound	Hound
+Bavarian Mountain Hound	Hound
+Beagle	Hound
+Beagle-Harrier	Hound
+Black and Tan Coonhound	Hound
+Black and Tan Virginia Foxhound	Hound
+Blackmouth Cur	Hound
+Bloodhound	Hound
+Bluetick Coonhound	Hound
+Bluetick Hound	Hound
+Borzoi	Hound
+Bosnian Coarse-haired Hound	Hound
+Chippiparai	Hound
+Cirneco dell'Etna	Hound
+Combai	Hound
+Coonhound	Hound
+Cretan Hound	Hound
+Dachshund	Hound
+Dachshund Longhair	Hound
+Dachshund Wirehair	Hound
+Deerhound	Hound
+Dumfriesshire Hound	Hound
+English Coonhound	Hound
+Estonian Hound	Hound
+English Foxhound	Hound
+Finnish Hound	Hound
+Foxhound	Hound
+Grand Bleu de Gascogne	Hound
+Greek Harehound	Hound
+Greyhound	Hound
+Hamiltonstovare	Hound
+Harrier	Hound
+Ibizan Hound	Hound
+Indian Pariah Dog	Hound
+Italian Greyhound	Hound
+Irish Wolfhound	Hound
+Istrian Coarse-haired Hound	Hound
+Istrian Shorthaired Hound	Hound
+Jämthund	Hound
+Kanni	Hound
+Kelb tal-Fenek	Hound
+Lithuanian Hound	Hound
+Mudhol hound	Hound
+Norwegian Elkhound	Hound
+Otterhound	Hound
+Pbgv	Hound
+Pharaoh Hound	Hound
+Piccolo Lepraiolo Italiano	Hound
+Plott Hound	Hound
+Podengo Pequeno	Hound
+Polish Hound	Hound
+Portuguese Podengo	Hound
+Posavac Hound	Hound
+Rajapalayam	Hound
+Redbone Coonhound	Hound
+Redbone Hound	Hound
+Rhodesian Ridgeback	Hound
+Sabueso Español	Hound
+Saluki	Hound
+Segugio Italiano a Pelo Forte	Hound
+Segugio Italiano a Pelo Raso	Hound
+Segugio Maremmano	Hound
+Serbian Hound	Hound
+Serbian Tricolour Hound	Hound
+Schweizer Laufhund	Hound
+Scottish Deerhound	Hound
+Silken Windhound	Hound
+Sloughi	Hound
+Taigan	Hound
+Thai Ridgeback	Hound
+Treeing Walker Coonhound	Hound
+Trigg Hound	Hound
+Transylvanian Hound	Hound
+Whippet	Hound
+Afghan Hound Mix	Hound Mix
+Africanis Mix	Hound Mix
+American Foxhound Mix	Hound Mix
+American Leopard Hound Mix	Hound Mix
+Andalusian Hound Mix	Hound Mix
+Artois Hound Mix	Hound Mix
+Austrian Black and Tan Hound Mix	Hound Mix
+Azawakh Mix	Hound Mix
+Basenji Mix	Hound Mix
+Basset Artesien Normand Mix	Hound Mix
+Basset Bleu de Gascogne Mix	Hound Mix
+Basset Fauve de Bretagne Mix	Hound Mix
+Grand Basset Griffon Vendeen Mix	Hound Mix
+Petit Basset Griffon Vendeen Mix	Hound Mix
+Basset Hound Mix	Hound Mix
+Bavarian Mountain Hound Mix	Hound Mix
+Beagle Mix	Hound Mix
+Beagle-Harrier Mix	Hound Mix
+Black and Tan Coonhound Mix	Hound Mix
+Black and Tan Virginia Foxhound Mix	Hound Mix
+Blackmouth Cur Mix	Hound Mix
+Bloodhound Mix	Hound Mix
+Bluetick Coonhound Mix	Hound Mix
+Bluetick Hound Mix	Hound Mix
+Borzoi Mix	Hound Mix
+Bosnian Coarse-haired Hound Mix	Hound Mix
+Chippiparai Mix	Hound Mix
+Cirneco dell’Etna Mix	Hound Mix
+Combai Mix	Hound Mix
+Coonhound Mix	Hound Mix
+Cretan Hound Mix	Hound Mix
+Dachshund Mix	Hound Mix
+Dachshund Longhair Mix	Hound Mix
+Dachshund Wirehair Mix	Hound Mix
+Deerhound Mix	Hound Mix
+Dumfriesshire Hound Mix	Hound Mix
+English Coonhound Mix	Hound Mix
+Estonian Hound Mix	Hound Mix
+English Foxhound Mix	Hound Mix
+Finnish Hound Mix	Hound Mix
+Foxhound Mix	Hound Mix
+Grand Bleu de Gascogne Mix	Hound Mix
+Greek Harehound Mix	Hound Mix
+Greyhound Mix	Hound Mix
+Hamiltonstovare Mix	Hound Mix
+Harrier Mix	Hound Mix
+Ibizan Hound Mix	Hound Mix
+Indian Pariah Dog Mix	Hound Mix
+Italian Greyhound Mix	Hound Mix
+Irish Wolfhound Mix	Hound Mix
+Istrian Coarse-haired Hound Mix	Hound Mix
+Istrian Shorthaired Hound Mix	Hound Mix
+Jämthund Mix	Hound Mix
+Kanni Mix	Hound Mix
+Kelb tal-Fenek Mix	Hound Mix
+Lithuanian Hound Mix	Hound Mix
+Mudhol hound Mix	Hound Mix
+Norwegian Elkhound Mix	Hound Mix
+Otterhound Mix	Hound Mix
+Pbgv Mix	Hound Mix
+Pharaoh Hound Mix	Hound Mix
+Piccolo Lepraiolo Italiano Mix	Hound Mix
+Plott Hound Mix	Hound Mix
+Podengo Pequeno Mix	Hound Mix
+Polish Hound Mix	Hound Mix
+Portuguese Podengo Mix	Hound Mix
+Posavac Hound Mix	Hound Mix
+Rajapalayam Mix	Hound Mix
+Redbone Coonhound Mix	Hound Mix
+Redbone Hound Mix	Hound Mix
+Rhodesian Ridgeback Mix	Hound Mix
+Sabueso Español Mix	Hound Mix
+Saluki Mix	Hound Mix
+Segugio Italiano a Pelo Forte Mix	Hound Mix
+Segugio Italiano a Pelo Raso Mix	Hound Mix
+Segugio Maremmano Mix	Hound Mix
+Serbian Hound Mix	Hound Mix
+Serbian Tricolour Hound Mix	Hound Mix
+Schweizer Laufhund Mix	Hound Mix
+Scottish Deerhound Mix	Hound Mix
+Silken Windhound Mix	Hound Mix
+Sloughi Mix	Hound Mix
+Taigan Mix	Hound Mix
+Thai Ridgeback Mix	Hound Mix
+Treeing Walker Coonhound Mix	Hound Mix
+Trigg Hound Mix	Hound Mix
+Transylvanian Hound Mix	Hound Mix
+Whippet Mix	Hound Mix

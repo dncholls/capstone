@@ -1,0 +1,44 @@
+American Eskimo	Non-Sporting
+Bichon Frise	Non-Sporting
+Boston Terrier	Non-Sporting
+Bulldog	Non-Sporting
+Chinese Sharpei	Non-Sporting
+Chow Chow	Non-Sporting
+Coton De Tulear	Non-Sporting
+Dalmatian	Non-Sporting
+English Bulldog	Non-Sporting
+Finnish Spitz	Non-Sporting
+French Bulldog	Non-Sporting
+Keeshond	Non-Sporting
+Lhasa Apso	Non-Sporting
+Lowchen	Non-Sporting
+Mexican Hairless	Non-Sporting
+Poodle	Non-Sporting
+Schipperke	Non-Sporting
+Shiba Inu	Non-Sporting
+Standard Poodle	Non-Sporting
+Tibetan Spaniel	Non-Sporting
+Tibetan Terrier	Non-Sporting
+Xoloitzcuintli (Mexican Hairless Dog)	Non-Sporting
+American Eskimo Mix	Non-Sporting Mix
+Bichon Frise Mix	Non-Sporting Mix
+Boston Terrier Mix	Non-Sporting Mix
+Bulldog Mix	Non-Sporting Mix
+Chinese Sharpei Mix	Non-Sporting Mix
+Chow Chow Mix	Non-Sporting Mix
+Coton De Tulear Mix	Non-Sporting Mix
+Dalmatian Mix	Non-Sporting Mix
+English Bulldog Mix	Non-Sporting Mix
+Finnish Spitz Mix	Non-Sporting Mix
+French Bulldog Mix	Non-Sporting Mix
+Keeshond Mix	Non-Sporting Mix
+Lhasa Apso Mix	Non-Sporting Mix
+Lowchen Mix	Non-Sporting Mix
+Mexican Hairless Mix	Non-Sporting Mix
+Poodle Mix	Non-Sporting Mix
+Schipperke Mix	Non-Sporting Mix
+Shiba Inu Mix	Non-Sporting Mix
+Standard Poodle Mix	Non-Sporting Mix
+Tibetan Spaniel Mix	Non-Sporting Mix
+Tibetan Terrier Mix	Non-Sporting Mix
+Xoloitzcuintli (Mexican Hairless Dog) Mix	Non-Sporting Mix
