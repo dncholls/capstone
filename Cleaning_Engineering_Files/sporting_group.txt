@@ -1,0 +1,62 @@
+American Water Spaniel	Sporting
+American Cocker Spaniel	Sporting
+Boykin Spaniel	Sporting
+Brittany	Sporting
+Chesapeake Bay Retriever	Sporting
+Clumber Spaniel	Sporting
+Cocker Spaniel	Sporting
+Curly Coated Retriever	Sporting
+English Cocker Spaniel	Sporting
+English Pointer	Sporting
+English Setter	Sporting
+English Springer Spaniel	Sporting
+Field Spaniel	Sporting
+Flat Coat Retriever	Sporting
+German Shorthair Pointer	Sporting
+German Wirehaired Pointer	Sporting
+Golden Retriever	Sporting
+Gordon Setter	Sporting
+Irish Setter	Sporting
+Irish Water Spaniel	Sporting
+Labrador Retriever	Sporting
+Lagotto Romagnolo	Sporting
+Nova Scotia Duck Tolling Retriever	Sporting
+Pointer	Sporting
+Spinone Italiano	Sporting
+Sussex Spaniel	Sporting
+Vizsla	Sporting
+Weimaraner	Sporting
+Welsh Springer Spaniel	Sporting
+Wirehaired Pointing Griffon	Sporting
+Wirehaired Vizsla	Sporting
+American Water Spaniel Mix	Sporting Mix
+American Cocker Spaniel Mix	Sporting Mix
+Boykin Spaniel Mix	Sporting Mix
+Brittany Mix	Sporting Mix
+Chesapeake Bay Retriever Mix	Sporting Mix
+Clumber Spaniel Mix	Sporting Mix
+Cocker Spaniel Mix	Sporting Mix
+Curly Coated Retriever Mix	Sporting Mix
+English Cocker Spaniel Mix	Sporting Mix
+English Pointer Mix	Sporting Mix
+English Setter Mix	Sporting Mix
+English Springer Spaniel Mix	Sporting Mix
+Field Spaniel Mix	Sporting Mix
+Flat Coat Retriever Mix	Sporting Mix
+German Shorthair Pointer Mix	Sporting Mix
+German Wirehaired Pointer Mix	Sporting Mix
+Golden Retriever Mix	Sporting Mix
+Gordon Setter Mix	Sporting Mix
+Irish Setter Mix	Sporting Mix
+Irish Water Spaniel Mix	Sporting Mix
+Labrador Retriever Mix	Sporting Mix
+Lagotto Romagnolo Mix	Sporting Mix
+Nova Scotia Duck Tolling Retriever Mix	Sporting Mix
+Pointer Mix	Sporting Mix
+Spinone Italiano Mix	Sporting Mix
+Sussex Spaniel Mix	Sporting Mix
+Vizsla Mix	Sporting Mix
+Weimaraner Mix	Sporting Mix
+Welsh Springer Spaniel Mix	Sporting Mix
+Wirehaired Pointing Griffon Mix	Sporting Mix
+Wirehaired Vizsla Mix	Sporting Mix
