@@ -1,0 +1,98 @@
+---
+title: "Model Performance Comparison"
+date: "December 3/2018"
+output: word_document
+---
+
+```{r, message = FALSE, echo = FALSE}
+library(PMCMR) # [2]
+```
+
+
+#### Statistical Model Comparison
+
+```{r, echo = FALSE}
+dt_results <- read.csv("/.../performance_dt.csv")
+rf_results <- read.csv("/.../performance_rf.csv")
+xgb_results <- read.csv("/.../performance_xgb.csv")
+nn_results <- read.csv("/.../performance_nn.csv")
+knn_results <- read.csv("/.../performance_knn.csv")
+
+dt_results$Model <- "Decision Tree"
+rf_results$Model <- "Random Forest"
+xgb_results$Model <- "XGBoost"
+nn_results$Model <- "Neural Network"
+knn_results$Model <- "k-Nearest Neighbors"
+
+model_results <- rbind(dt_results, rf_results, xgb_results, nn_results, knn_results)
+model_results <- model_results[,-1]
+model_results$Trial <- rep(1:10, times = 5)
+```
+
+
+**Testing for Normality**
+```{r, echo = FALSE}
+shapiro.test(model_results$F1)
+shapiro.test(model_results$Accuracy)
+shapiro.test(model_results$Precision)
+shapiro.test(model_results$Recall)
+shapiro.test(model_results$Cohen_Kappa)
+```
+
+Since all p-values are less than 0.05, we proceed with non-parametric statistical testing.
+
+
+**Friedman Test**
+
+H~0~: the k population treatments are identical. [1]
+
+H~a~: at least two of the k populations differ. [1]
+
+```{r, echo = FALSE}
+friedman.test(F1 ~ Model | Trial, data = model_results)
+```
+
+The p-value indicates the results of the Friedman Test are statistically significant. As such, we can move on to the post-hoc test, Nemenyi, to explain the results in more detail.
+
+**Nemenyi Test**
+
+```{r, echo = FALSE}
+posthoc.friedman.nemenyi.test(F1 ~ Model | Trial, data = model_results)
+# [2]
+```
+
+
+#### Graphical Model Comparison
+
+```{r, echo = FALSE, fig.width = 11, fig.height = 8}
+model_avgs <- data.frame(Model = c("Decision Tree", "Random Forest", "XGBoost", "Neural Network", "k-Nearest Neighbors"))
+model_avgs$Accuracy <- NA
+model_avgs$Precision <- NA
+model_avgs$Recall <- NA
+model_avgs$F1 <- NA
+model_avgs$Cohen_Kappa <- NA
+
+for (i in 1:5)
+{
+  model_avgs[1,i+1] <- mean(model_results[model_results$Model == "Decision Tree",i])
+  model_avgs[2,i+1] <- mean(model_results[model_results$Model == "Random Forest",i])
+  model_avgs[3,i+1] <- mean(model_results[model_results$Model == "XGBoost",i])
+  model_avgs[4,i+1] <- mean(model_results[model_results$Model == "Neural Network",i])
+  model_avgs[5,i+1] <- mean(model_results[model_results$Model == "k-Nearest Neighbors",i])
+}
+
+boxplot(F1 ~ Model, data = model_results, xlab = "Classifier", ylab = "Average F1 Score", main = "F1 Score vs Classifier for 10 Fold Cross Validation")
+```
+
+```{r, echo = FALSE, fig.width = 4.5}
+boxplot(Accuracy ~ Model, data = model_results, xlab = "Classifier", ylab = "Average Accuracy")
+boxplot(Precision ~ Model, data = model_results, xlab = "Classifier", ylab = "Average Precision")
+boxplot(Recall ~ Model, data = model_results, xlab = "Classifier", ylab = "Average Recall")
+boxplot(Cohen_Kappa ~ Model, data = model_results, xlab = "Classifier", ylab = "Average Cohen's Kappa Coefficient")
+```
+
+
+### Works Cited
+[1] Babaoglu, Ceni. “The Friedman Test.” Online lecture provided by Ryerson University, Toronto, ON, May 23, 2018.
+
+[2] Pohlert, Thorsten. “The Pairwise Multiple Comparison of Mean Ranks Package (PMCMR).” Last Modified January 6, 2016. https://cran.r-project.org/web/packages/PMCMR/vignettes/PMCMR.pdf.

@@ -1,0 +1,583 @@
+---
+title: "Data Cleaning and Feature Engineering"
+date: "December 3/2018"
+output: html_document
+---
+
+
+**Connecting to the AWS Database.**
+
+```{r, message = FALSE}
+## Loading Relevant Libraries.
+library(dplyr) # [5]
+library(tis) # [6]
+library(Boruta) # [4]
+
+## Creating a Connection to the AWS Database.
+host="[host name]"
+port="[port number]"
+dbname="[dbname]"
+user="[username]"
+password=rstudioapi::askForPassword("Enter your password:")
+
+mr_data = src_mysql(dbname=dbname,host=host,port=port,user=user,password=password)
+
+#[3]
+```
+
+**Loading Data to AWS**
+
+```{r}
+## Loading the Austin Animal Center Datasets into R
+#raw_intakes <- read.csv("/.../Austin_Animal_Center_Intakes_Oct1.csv", na.strings = c("", "NULL"))# [1]
+#raw_outcomes <- read.csv("/.../Austin_Animal_Center_Outcomes_Oct1.csv", na.strings = c("", "NULL")) # [2]
+
+## Copying Data to the AWS Database
+#copy_to(mr_data, raw_intakes, temporary = FALSE)
+#copy_to(mr_data, raw_outcomes, temporary = FALSE)
+
+## Making AWS Tables Accessible in R
+intake_data = tbl(mr_data, "raw_intakes")
+outcome_data = tbl(mr_data, "raw_outcomes")
+
+# [3]
+
+```
+
+**Data Cleaning Functions**
+
+```{r}
+# Where applicable:
+## file = 0 is indicative of the intakes dataset.
+## file = 1 is indicative of the outcomes dataset.
+
+## Changes Data Types of the DateTime, Date.of.Birth and MonthYear Attributes for the Intakes and Outcomes Datasets.
+datetime_converter <- function(date_time, file)
+{
+  datetime_format = '%m/%d/%Y %I:%M:%S %p'
+  date_time$DateTime = as.POSIXct(date_time$DateTime, format = datetime_format)
+  date_time$MonthYear = format(as.Date(date_time$DateTime), "%Y-%m")
+  
+  if(file == 1)
+  {
+    date_time$Date.of.Birth = as.POSIXct(date_time$Date.of.Birth, format = "%m/%d/%Y")
+    date_time$Month = format(as.Date(date_time$DateTime), "%m")
+    num_months <- read.delim("/.../months.txt", header = FALSE)
+    names(num_months)[1] <- "Month"
+    names(num_months)[2] <- "Outcome.Month"
+    date_time$Month <- as.numeric(date_time$Month)
+    date_time <- merge(date_time, num_months, by = "Month", all.x = TRUE)
+    date_time$Month <- NULL
+  }
+  
+  else
+  {
+    date_time$Month = format(as.Date(date_time$DateTime), "%m")
+    num_months <- read.delim("/.../months.txt", header = FALSE)
+    names(num_months)[1] <- "Month"
+    names(num_months)[2] <- "Intake.Month"
+    date_time$Month <- as.numeric(date_time$Month)
+    date_time <- merge(date_time, num_months, by = "Month", all.x = TRUE)
+    date_time$Month <- NULL
+  }
+  
+  return(date_time)
+}
+
+## Cleans Up the Age.upon.[x] Attributes and Converts the Input to a Unit of Years.
+age_cleaning <- function(input, file)
+{
+  if(file == 0)
+  {
+    input$Age.upon.Intake = gsub("(1 weeks)", "1 week", input$Age.upon.Intake)
+    
+    input$Age.upon.Intake[grep("(month)+", input$Age.upon.Intake)] = as.numeric(gsub("(month)+s*", "", input$Age.upon.Intake[grep("(month)+", input$Age.upon.Intake)]))*0.083333545491
+    
+    input$Age.upon.Intake[grep("(week)+", input$Age.upon.Intake)] = as.numeric(gsub("(week)+s*", "", input$Age.upon.Intake[grep("(week)+", input$Age.upon.Intake)]))*0.01917811
+    
+    input$Age.upon.Intake[grep("(day)+", input$Age.upon.Intake)] = as.numeric(gsub("(day)+s*", "", input$Age.upon.Intake[grep("(day)+", input$Age.upon.Intake)]))*0.00273973
+    
+    input$Age.upon.Intake[grep("(year)+", input$Age.upon.Intake)] = as.numeric(gsub("(year)+s*", "", input$Age.upon.Intake[grep("(year)+", input$Age.upon.Intake)]))
+    
+    input$Age.upon.Intake = sapply(input$Age.upon.Intake, as.numeric)
+  }
+  
+  else
+  {
+    input$Age.upon.Outcome = gsub("(1 weeks)", "1 week", input$Age.upon.Outcome)
+    
+    input$Age.upon.Outcome[grep("(month)+", input$Age.upon.Outcome)] = as.numeric(gsub("(month)+s*", "", input$Age.upon.Outcome[grep("(month)+", input$Age.upon.Outcome)]))*0.083333545491
+    
+    input$Age.upon.Outcome[grep("(week)+", input$Age.upon.Outcome)] = as.numeric(gsub("(week)+s*", "", input$Age.upon.Outcome[grep("(week)+", input$Age.upon.Outcome)]))*0.01917811
+    
+    input$Age.upon.Outcome[grep("(day)+", input$Age.upon.Outcome)] = as.numeric(gsub("(day)+s*", "", input$Age.upon.Outcome[grep("(day)+", input$Age.upon.Outcome)]))*0.00273973
+    
+    input$Age.upon.Outcome[grep("(year)+", input$Age.upon.Outcome)] = as.numeric(gsub("(year)+s*", "", input$Age.upon.Outcome[grep("(year)+", input$Age.upon.Outcome)]))
+    
+    input$Age.upon.Outcome = sapply(input$Age.upon.Outcome, as.numeric)
+  }
+  
+  return(input)
+}
+
+## Merges "Unknown" and "<NA>" in the "Sex.Upon.[x]" Attributes.
+unknown_sex <- function(input, file)
+{
+  if(file == 0)
+  {
+    input$Sex.upon.Intake[is.na(input$Sex.upon.Intake)] = "Unknown"
+  }
+  
+  else
+  {
+    input$Sex.upon.Outcome[is.na(input$Sex.upon.Outcome)] = "Unknown"
+  }
+  
+  return(input)
+}
+
+## Removes any NAs in the Dataset.
+na_remover <- function(input, file)
+{
+  if(file == 1)
+  {
+    input$Name[is.na(input$Name)] <- "No Name"
+    input$Outcome.Subtype[is.na(input$Outcome.Subtype)] <- "None"
+  }
+  
+  return(input)
+}
+
+## Cleans the Found.Location Attribute to List only the City the Animal was Found in.
+edit_location <- function(input, file)
+{
+  if(file == 0)
+  {
+    input$Found.Location = gsub("(?:.* in )+", "\\1", input$Found.Location)
+  }
+  
+  return(input)
+}
+
+## Combines the Previous 5 Functions to do a "Total Clean"
+total_clean <- function(input, file)
+{
+  input = datetime_converter(input, file)
+  input = age_cleaning(input, file)
+  input = unknown_sex(input, file)
+  input = na_remover(input, file)
+  input = edit_location(input,file)
+  
+  return(input)
+}
+
+## Creates a New Attribute -- Days.to.Outcome.
+### Days.to.Outcome tells the user how many days an animal stayed at the center.
+days_to_outcome <- function(input)
+{
+  input$Days.to.Outcome = as.double(difftime(input$Outcome.Date, input$Intake.Date, units = "days"))
+  
+  return(input)
+}
+
+inner_join_func <- function(intakes, outcomes)
+{
+  # Preparing for Inner Join #
+  intakes = subset(intakes, select = -Animal.Type)
+  
+  ## Renaming 2 Columns in Each Dataset.
+  names(intakes)[2] = "Intake.Date"
+  names(intakes)[3] = "Intake.MonthYear"
+  names(outcomes)[3] = "Outcome.Date"
+  names(outcomes)[4] = "Outcome.MonthYear"
+  
+  # Performing the Inner Join #
+  total = outcomes %>% inner_join(intakes, by = c("Animal.ID" = "Animal.ID")) %>% filter((Outcome.Date - Intake.Date) > 0)
+  
+  ## Adding a New Column to Describe the Number of Days the Animal Stayed in the Shelter.
+  total = days_to_outcome(total)
+  
+  ## Cleaning Superfluous Rows Resulting from the Join.
+  total = total %>% select(everything()) %>% group_by(Animal.ID, Outcome.Date) %>% filter(which.min(Days.to.Outcome) == row_number())
+  
+  return(total)
+}
+
+# [5], [6]
+```
+
+
+**Functions for Feature Engineering**
+
+```{r}
+## Creates New Breed Attributes for Dogs -- Purebred.or.Mixed and AKC.Group
+### Generalizes the "Breed" Attribute for Dogs.
+dog_breed_cleaning <- function(input)
+{
+  # Loading in Text Files that Dictate AKC Dog Group
+  sporting.group <- read.delim("/.../AKC Groups/sporting_group.txt", header = FALSE)
+  herding.group <- read.delim("/.../AKC Groups/herding_group.txt", header = FALSE)
+  hound.group <- read.delim("/.../AKC Groups/hound_group.txt", header = FALSE)
+  nonsporting.group <- read.delim("/.../AKC Groups/nonsporting_group.txt", header = FALSE)
+  terrier.group <- read.delim("/.../AKC Groups/terrier_group.txt", header = FALSE)
+  toy.group <- read.delim("/.../AKC Groups/toy_group.txt", header = FALSE)
+  working.group <- read.delim("/.../AKC Groups/working_group.txt", header = FALSE)
+  misc.class <- read.delim("/.../AKC Groups/miscellaneous_class.txt", header = FALSE)
+  fss.group <- read.delim("/.../AKC Groups/fss_group.txt", header = FALSE)
+  
+  # Editing the Text Files
+  akc_groups <- rbind(sporting.group, herding.group, hound.group, nonsporting.group, terrier.group, toy.group, working.group, misc.class, fss.group)
+  
+  names(akc_groups)[1] = "Breed"
+  names(akc_groups)[2] = "AKC.Group"
+  
+  # Altering the Breed Attribute.
+  input$Breed = gsub("(Span)+(?!iel)", "Spaniel", input$Breed, perl = TRUE)
+  input$Breed = gsub("(Bruss+)(?!els)", "Brussels", input$Breed, perl = TRUE)
+  input$Breed = gsub("(Retr+)(?!iever)", "Retriever", input$Breed, perl = TRUE)
+  input$Breed = gsub("(Chesa+)(?!peake)", "Chesapeake", input$Breed, perl = TRUE)
+  input$Breed = gsub("(Pinsch+)(?!er)", "Pinscher", input$Breed, perl = TRUE)
+  input$Breed = gsub("(Rhod+)(?!esian)", "Rhodesian", input$Breed, perl = TRUE)
+  input$Breed = gsub("(Anatol+)(?!ian)", "Anatolian", input$Breed, perl = TRUE)
+  input$Breed = gsub("(Terr+)(?!ier)", "Terrier", input$Breed, perl = TRUE)
+  input$Breed = gsub("(Eng+)(?!lish)", "English", input$Breed, perl = TRUE)
+  input$Breed = gsub("(Spanielish+)", "Spanish", input$Breed, perl = TRUE)
+  
+  # Adding the Attributes
+  ## Purebred.or.Mixed
+  input$Purebred.or.Mixed <- NA
+  input$Purebred.or.Mixed[grepl("(Mix)+", input$Breed) | grepl("/", input$Breed)] = "Mixed"
+  input$Purebred.or.Mixed[!grepl("(Mix)+", input$Breed) & !grepl("/", input$Breed)] = "Purebred"
+  
+  ## AKC.Group
+  input <- merge(input, akc_groups, by = "Breed", all.x = TRUE)
+  input$AKC.Group <- as.character(input$AKC.Group)
+  input$AKC.Group[is.na(input$AKC.Group)] <- "Not Recognized"
+  
+  return(input)
+}
+
+## Creates an Even More Generalized Attribute for Dog Breed -- Gen.Group.
+general_dog_group <- function(input)
+{
+  gen.group <- read.delim("/.../AKC Groups/gen_group.txt", header = FALSE)
+  
+  names(gen.group)[1] = "Breed"
+  names(gen.group)[2] = "Gen.Group"
+  
+  input <- merge(input, gen.group, by = "Breed", all.x = TRUE)
+  input$Gen.Group <- as.character(input$Gen.Group)
+  input$Gen.Group[is.na(input$Gen.Group)] <- "Multigroup"
+  
+  return(input)
+}
+
+## Creates New Breed Attributes for Cats -- Purebred.or.Mixed and Gen.Group
+### Generalizes the "Breed" Attribute for Cats.
+cat_breed_cleaning <- function(input)
+{
+  # Adding the Attributes
+  ## Purebred.or.Mixed
+  input$Purebred.or.Mixed <- NA
+  input$Purebred.or.Mixed[grepl("(Mix)+", input$Breed) | grepl("/", input$Breed)] = "Mixed"
+  input$Purebred.or.Mixed[!grepl("(Mix)+", input$Breed) & !grepl("/", input$Breed)] = "Purebred"
+  
+  gen.group <- read.delim("/.../AKC Groups/cat_breeds.txt", header = FALSE)
+  
+  names(gen.group)[1] = "Breed"
+  names(gen.group)[2] = "Gen.Group"
+  
+  input <- merge(input, gen.group, by = "Breed", all.x = TRUE)
+  input$Gen.Group <- as.character(input$Gen.Group)
+  input$Gen.Group[is.na(input$Gen.Group)] <- "Multigroup"
+  
+  return(input)
+}
+
+## Creates New Breed Attributes for Birds -- Purebred.or.Mixed and Gen.Group.
+### Generalizes the "Breed" Attribute for Birds.
+bird_breed_cleaning <- function(input)
+{
+  # Adding the Attributes
+  ## Purebred.or.Mixed
+  input$Purebred.or.Mixed <- NA
+  input$Purebred.or.Mixed[grepl("(Mix)+", input$Breed)] = "Mixed"
+  input$Purebred.or.Mixed[!grepl("(Mix)+", input$Breed)] = "Purebred"
+  
+  gen.group <- read.delim("/.../AKC Groups/bird_breeds.txt", header = FALSE)
+  
+  names(gen.group)[1] = "Breed"
+  names(gen.group)[2] = "Gen.Group"
+  
+  input <- merge(input, gen.group, by = "Breed", all.x = TRUE)
+  input$Gen.Group <- as.character(input$Gen.Group)
+  
+  return(input)
+}
+
+## Creates a General Color Attribute.
+### Generalizes the "Color" Attribute.
+animal_color <- function(input, type)
+{
+  if(type == "Cat")
+  {
+    cat_colors <- read.delim("/.../Cat-Related/cat_colors.txt", header = FALSE, stringsAsFactors = FALSE)
+    colors <- sapply(cat_colors$V1, function(color) grepl(color, input$Color))
+    
+    input$Color <- gsub("Torbie", "Tortie", input$Color)
+    input$Gen.Color <- apply(colors, 1, function(x) paste0(names(x)[x], collapse = "/"))
+    input$Gen.Color[input$Gen.Color == ""] <- input$Color[input$Gen.Color == ""]
+    input$Gen.Color[grepl("/", input$Gen.Color) | grepl("Tricolor", input$Gen.Color)] = "Multicolored"
+  }
+  
+  else if(type == "Dog")
+  {
+    dog_colors <- read.delim("/.../AKC Groups/dog_colors.txt", header = FALSE, stringsAsFactors = FALSE)
+    colors <- sapply(dog_colors$V1, function(color) grepl(color, input$Color))
+    
+    input$Gen.Color <- apply(colors, 1, function(x) paste0(names(x)[x], collapse = "/"))
+    input$Gen.Color[input$Gen.Color == ""] <- input$Color[input$Gen.Color == ""]
+    input$Gen.Color[grepl("/", input$Gen.Color) | grepl("Tricolor", input$Gen.Color)] = "Multicolored"
+  }
+  
+  else if(type == "Bird")
+  {
+    input$Gen.Color <- input$Color
+    input$Gen.Color[grepl("/", input$Gen.Color) | grepl("Tricolor", input$Gen.Color)] = "Multicolored"
+  }
+  
+  return(input)
+}
+
+## Creates a Gender Attribute.
+animal_gender <- function(input)
+{
+  input$Gender <- NA
+  input$Gender[grepl("(Male)+", input$Sex.upon.Outcome)] = "Male"
+  input$Gender[grepl("(Female)+", input$Sex.upon.Outcome)] = "Female"
+  input$Gender[grepl("(Unknown)+", input$Sex.upon.Outcome)] = "Unknown Gender"
+  
+  return(input)
+}
+
+## Creates an Attribute that Indicates if Sex.upon.Intake differs from Sex.upon.Outcome.
+sex_difference <- function(input)
+{
+  input$Sex.Difference <- NA
+  input$Sex.Difference[which(input$Sex.upon.Intake != input$Sex.upon.Outcome)] <- gsub("( Female| Male)*", "", input$Sex.upon.Outcome[which(input$Sex.upon.Intake != input$Sex.upon.Outcome)])
+  input$Sex.Difference[which(input$Sex.upon.Intake == input$Sex.upon.Outcome)] <- "No Change"
+  
+  return(input)
+}
+
+## Removes Entries with the Outcome.Type "Died", "Missing" or "Disposal." Combines the Outcome.Types "Rto-Adopt" and "Adoption" as well as "Relocate" and "Transfer."
+outcome_type_cleaning <- function(input)
+{
+  input <- input[-which(input$Outcome.Type == "Died"),]
+  input <- input[-which(input$Outcome.Type == "Missing"),]
+  input <- input[-which(input$Outcome.Type == "Disposal"),]
+  input$Outcome.Type[input$Outcome.Type == "Rto-Adopt"] <- "Adoption"
+  input$Outcome.Type[input$Outcome.Type == "Relocate"] <- "Transfer"
+  
+  return(input)
+}
+
+## Creates 2 New Attributes -- Birth.Month and Birth.Year -- that Indicates what Month and Year an Animal was Born in.
+birth_date <- function(input)
+{
+  input$Month <- NA
+  input$Birth.Year <- NA
+  
+  input$Month <- format(as.Date(input$Date.of.Birth), "%m")
+  num_months <- read.delim("/.../months.txt", header = FALSE)
+  names(num_months)[1] <- "Month"
+  names(num_months)[2] <- "Birth.Month"
+  input$Month <- as.numeric(input$Month)
+  input <- merge(input, num_months, by = "Month", all.x = TRUE)
+  input$Month <- NULL
+  
+  input$Birth.Year <- format(as.Date(input$Date.of.Birth), "%Y")
+  
+  return(input)
+}
+
+## Creates a New Attribute that Indicates if the Animal is a Baby or Not.
+baby_or_adult <- function(input, type)
+{
+  input$Outcome.Baby <- NA
+  input$Intake.Baby <- NA
+  
+  if(type == "Dog")
+  {
+    input$Outcome.Baby[input$Age.upon.Outcome < 2] <- "Puppy"
+    input$Outcome.Baby[input$Age.upon.Outcome >= 2] <- "Adult Dog"
+    
+    input$Intake.Baby[input$Age.upon.Intake < 2] <- "Puppy"
+    input$Intake.Baby[input$Age.upon.Intake >= 2] <- "Adult Dog"
+  }
+  
+  else if(type == "Cat")
+  {
+    input$Outcome.Baby[input$Age.upon.Outcome < 1] <- "Kitten"
+    input$Outcome.Baby[input$Age.upon.Outcome >= 1] <- "Adult Cat"
+    
+    input$Intake.Baby[input$Age.upon.Intake < 1] <- "Kitten"
+    input$Intake.Baby[input$Age.upon.Intake >= 1] <- "Adult Cat"
+  }
+  
+  else
+  {  
+    input$Outcome.Baby[input$Age.upon.Outcome <= 1] <- "Chick"
+    input$Outcome.Baby[input$Age.upon.Outcome > 1] <- "Adult Bird"
+    
+    input$Intake.Baby[input$Age.upon.Intake <= 1] <- "Chick"
+    input$Intake.Baby[input$Age.upon.Intake > 1] <- "Adult Bird"
+  }
+  
+  return(input)
+}
+
+## Puts the Days.to.Outcome Data into Buckets.
+gen_outcome_date <- function(input)
+{
+  input$Gen.Days.to.Outcome <- NA
+  input$Gen.Days.to.Outcome[input$Days.to.Outcome < 7] <- "(0, 1 Week)"
+  input$Gen.Days.to.Outcome[input$Days.to.Outcome >= 7 & input$Days.to.Outcome <= 28] <- "(1 Week, 1 Month)"
+  input$Gen.Days.to.Outcome[input$Days.to.Outcome > 28 & input$Days.to.Outcome <= 365] <- "(1 Month, 1 Year)"
+  input$Gen.Days.to.Outcome[input$Days.to.Outcome > 365] <- "(1 Year, inf)"
+  
+  return(input)
+}
+
+## Creates a New Attribute that Indicates whether an Animal is "Neutered", "Intact" or "Unknown."
+gen_sex <- function(input)
+{
+  input$Gen.Sex <- NA
+  input$Gen.Sex[input$Sex.upon.Outcome == "Spayed Female" | input$Sex.upon.Outcome == "Neutered Male"] <- "Neutered"
+  input$Gen.Sex[input$Sex.upon.Outcome == "Intact Female" | input$Sex.upon.Outcome == "Intact Male"] <- "Intact"
+  input$Gen.Sex[input$Sex.upon.Outcome == "Unknown"] <- "Unknown"
+  
+  return(input)
+}
+
+## Creates an Attribute that Indicates if an Animal has a Name or Not.
+named_not <- function(input)
+{
+  input$Named <- NA
+  input$Named[input$Name == "No Name"] <- "Unnamed"
+  input$Named[input$Name != "No Name"] <- "Named"
+  
+  return(input)
+}
+
+## Creates an Attribute that Indicates if an Animal was Found Inside or Outside Jurisdiction.
+gen_location <- function(input)
+{
+  input$Gen.Location <- NA
+  input$Gen.Location[input$Found.Location == "Outside Jurisdiction"] <- "Outside Jurisdiction"
+  input$Gen.Location[input$Found.Location != "Outside Jurisdiction"] <- "Inside Jurisdiction"
+
+  return(input)
+}
+
+## Calls all Feature Engineering Functions
+feature_engineering <- function(input, type)
+{
+  input = animal_gender(input)
+  input = sex_difference(input)
+  input = outcome_type_cleaning(input)
+  input = birth_date(input)
+  input = baby_or_adult(input, type)
+  input = gen_outcome_date(input)
+  input = gen_sex(input)
+  input = named_not(input)
+  input = gen_location(input)
+  
+  if(type == "Dog")
+  {
+    input = dog_breed_cleaning(input)
+    input = animal_color(input,type)
+    input = general_dog_group(input)
+  }
+  
+  else if(type == "Cat")
+  {
+    input = cat_breed_cleaning(input)
+    input = animal_color(input, type)
+  }
+  
+  else if(type == "Bird")
+  {
+    input = animal_color(input, type)
+    input = bird_breed_cleaning(input)
+  }
+  
+  return(input)
+}
+```
+
+
+**Model Preparation**
+
+```{r}
+## Bringing the Relevant Data from AWS to Memory.
+dog_intakes = intake_data %>% select(-one_of("Name", "Breed", "Color")) %>% filter(Animal.Type == "Dog") %>% collect()
+bird_intakes = intake_data %>% select(-one_of("Name", "Breed", "Color")) %>% filter(Animal.Type == "Bird") %>% collect()
+cat_intakes = intake_data %>% select(-one_of("Name", "Breed", "Color")) %>% filter(Animal.Type == "Cat") %>% collect()
+
+dog_outcomes = outcome_data %>% select(everything()) %>% filter(Animal.Type == "Dog" & !is.na(Age.upon.Outcome) & !is.na(Outcome.Type)) %>% collect()
+bird_outcomes = outcome_data %>% select(everything()) %>% filter(Animal.Type == "Bird" & !is.na(Age.upon.Outcome) & !is.na(Outcome.Type)) %>% collect()
+cat_outcomes = outcome_data %>% select(everything()) %>% filter(Animal.Type == "Cat" & !is.na(Age.upon.Outcome) & !is.na(Outcome.Type)) %>% collect()
+
+# [5]
+
+## Cleaning Datasets.
+dog_intakes = total_clean(dog_intakes, 0)
+dog_outcomes = total_clean(dog_outcomes, 1)
+
+cat_intakes = total_clean(cat_intakes, 0)
+cat_outcomes = total_clean(cat_outcomes, 1)
+
+bird_intakes = total_clean(bird_intakes, 0)
+bird_outcomes = total_clean(bird_outcomes, 1)
+
+## Performing the Inner Join.
+bird_total = inner_join_func(bird_intakes, bird_outcomes)
+dog_total = inner_join_func(dog_intakes, dog_outcomes)
+cat_total = inner_join_func(cat_intakes, cat_outcomes)
+
+## Applying Feature Engineering Functions.
+dog_total <- feature_engineering(dog_total, "Dog")
+cat_total <- feature_engineering(cat_total, "Cat")
+bird_total <- feature_engineering(bird_total, "Bird")
+
+## Selecting the Relevant Features
+cols <- c("Outcome.Type", "Gen.Sex", "Age.upon.Outcome", "Intake.Type", "Intake.Condition", "Days.to.Outcome", "Outcome.Baby", "Age.upon.Intake", "Named", "Birth.Year", "Gen.Group", "Gen.Color", "Outcome.Month", "Gen.Location")
+
+to_model <- rbind(dog_total[,cols], cat_total[,cols], bird_total[,cols])
+
+## Using Boruta to Aid in Feature Engineering.
+set.seed(136)
+to_model_fac <- as.data.frame(unclass(to_model))
+boruta_total <- Boruta(Outcome.Type ~., data = to_model_fac, doTrace = 2)
+print(boruta_total)
+attStats(boruta_total)
+# [4]
+
+## Saving the Finalized DataFrame as a CSV.
+write.csv(to_model, file = "animal_total.csv")
+```
+
+
+### Works Cited
+[1] Austin Animal Center. Austin Animal Center Intakes. October 1, 2018. Distributed by the official city of Austin open data portal. https://data.austintexas.gov/Health-and-Community-Services/Austin-Animal-Center-Intakes/wter-evkm.
+
+[2] Austin Animal Center. Austin Animal Center Outcomes. October 1, 2018. Distributed by the official city of Austin open data portal. https://data.austintexas.gov/Health-and-Community-Services/Austin-Animal-Center-Outcomes/9t4d-g238.
+
+[3] Berhane, Fiseeha. “Using Amazon Relational Database Service with Python and R.” datascience-enthusiast. Accessed September 23, 2017. https://datascience-enthusiast.com/R/AWS_RDS_R_Python.html.
+
+[4] Kursa, Miron B., and Witold R. Rudnicki. "Feature selection with the Boruta package." J Stat Softw 36, no. 11 (2010): 1-13.
+
+[5] “Package ‘dplyr’”. Last Modified November 10, 2018. https://cran.r-project.org/web/packages/dplyr/dplyr.pdf.
+
+[6] “Package ’tis’”. Last Modified December 19, 2017. https://cran.r-project.org/web/packages/tis/tis.pdf.
